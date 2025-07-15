@@ -14,7 +14,7 @@ public class Cube : MonoBehaviour
     {
         _parentPool = parentPool;
         _isTouchedPlatform = false;
-        GetComponent<Renderer>().material.color = Color.red;
+        GetComponent<Renderer>().material.color = Color.white;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -23,8 +23,7 @@ public class Cube : MonoBehaviour
         {
             _isTouchedPlatform = true;
             ColorChange();
-            _runTime = Random.Range(_runTimeMin, _runTimeMax);
-            Invoke(nameof(DisableCube), _runTime);
+            Invoke(nameof(DisableCube), SetRandomValye());
         }
     }
 
@@ -36,5 +35,11 @@ public class Cube : MonoBehaviour
     private void DisableCube()
     {
         _parentPool.Release(gameObject);
+    }
+
+    private float SetRandomValye()
+    {
+        _runTime = Random.Range(_runTimeMin, _runTimeMax);
+        return _runTime;
     }
 }

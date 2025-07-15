@@ -10,9 +10,8 @@ public class CubesSpawner : MonoBehaviour
     [SerializeField] private int _poolMaxSize = 10;
     [SerializeField] private Transform _spawnCenter;
 
-    private ObjectPool<GameObject> _pool; 
-    
-
+    private ObjectPool<GameObject> _pool;
+    private const float InitialDelay = 0f;
 
     private void Awake()
     {
@@ -36,7 +35,7 @@ public class CubesSpawner : MonoBehaviour
 
     private void Start()
     {
-        InvokeRepeating(nameof(GetCube), 0.0f, _repeatRate);
+        InvokeRepeating(nameof(GetCube), InitialDelay, _repeatRate);
     }
 
     private void GetCube()
