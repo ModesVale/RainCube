@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Pool;
 
 public class Cube : MonoBehaviour
@@ -9,32 +10,35 @@ public class Cube : MonoBehaviour
     private float _runTime;
     private ObjectPool<GameObject> _parentPool;
     private bool _isTouchedPlatform = false;
+    private UnityAction _releaseAction;
+    public event UnityAction CubeTouched;
 
-    public void InitializePool(ObjectPool<GameObject> parentPool)
+    public void SetDefaultConfig()
     {
-        _parentPool = parentPool;
         _isTouchedPlatform = false;
-        GetComponent<Renderer>().material.color = Color.white;
+        GetComponent<ColorChanger>().SetDefaultColor();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.TryGetComponent(out TouchedPlatform _) && _isTouchedPlatform == false)
+        if (collision.gameObject.TryGetComponent(out Platform _) && _isTouchedPlatform == false)
         {
             _isTouchedPlatform = true;
-            ColorChange();
-            Invoke(nameof(DisableCube), SetRandomValye());
+            GetComponent<ColorChanger>().SetRandomColor();
+            CubeTouched?.Invoke();
         }
     }
 
-    private void ColorChange()
+    public void RegisterReturnAction(UnityAction returnAction)
     {
-        GetComponent<Renderer>().material.color = Random.ColorHSV();
+        _releaseAction = returnAction;
+        CubeTouched += _releaseAction;
     }
 
-    private void DisableCube()
+    public void UnregisterReturnAction()
     {
-        _parentPool.Release(gameObject);
+        CubeTouched -= _releaseAction;
+        _releaseAction = null;
     }
 
     private float SetRandomValye()

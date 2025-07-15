@@ -17,20 +17,29 @@ public class CubesSpawner : MonoBehaviour
     {
         _pool = new ObjectPool<GameObject>(
             createFunc: () => Instantiate(_prefab),
-            actionOnGet: (prefub) => ActionOnGet(prefub),
-            actionOnRelease: (prefub) => prefub.SetActive(false),
-            actionOnDestroy: (prefub) => Destroy(prefub),
+            actionOnGet: (instance) => ActionOnGet(instance),
+            actionOnRelease: OnRelease,
+            actionOnDestroy: (instance) => Destroy(instance),
             collectionCheck: true,
             defaultCapacity: _poolCapacity,
             maxSize: _poolMaxSize);
     }
 
-    private void ActionOnGet(GameObject prefub)
+    private void ActionOnGet(GameObject instance)
     {
-        prefub.transform.position = GetRandomSpawnPoint();
-        prefub.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        prefub.GetComponent<Cube>().InitializePool(_pool);
-        prefub.SetActive(true);
+        Cube cube = instance.GetComponent<Cube>();
+        cube.RegisterReturnAction(() => _pool.Release(instance));
+        instance.transform.position = GetRandomSpawnPoint();
+        instance.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        instance.GetComponent<Cube>().SetDefaultConfig();
+        instance.SetActive(true);
+    }
+
+    private void OnRelease(GameObject instance)
+    {
+        Cube cube = instance.GetComponent<Cube>();
+        cube.UnregisterReturnAction();
+        instance.SetActive(false);
     }
 
     private void Start()
