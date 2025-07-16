@@ -37,7 +37,7 @@ public class CubesSpawner : MonoBehaviour
 
     private void OnRelease(Cube instance)
     {
-        instance.GetComponent<Cube>().UnregisterReturnAction();
+        instance.UnregisterReturnAction();
         instance.gameObject.SetActive(false);
     }
 
