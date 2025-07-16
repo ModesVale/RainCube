@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Pool;
@@ -17,6 +18,7 @@ public class Cube : MonoBehaviour
     {
         _isTouchedPlatform = false;
         GetComponent<ColorChanger>().SetDefaultColor();
+        transform.rotation = Quaternion.identity;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -25,7 +27,7 @@ public class Cube : MonoBehaviour
         {
             _isTouchedPlatform = true;
             GetComponent<ColorChanger>().SetRandomColor();
-            CubeTouched?.Invoke();
+            StartCoroutine(CooldownDisable());
         }
     }
 
@@ -45,5 +47,11 @@ public class Cube : MonoBehaviour
     {
         _runTime = Random.Range(_runTimeMin, _runTimeMax);
         return _runTime;
+    }
+
+    private IEnumerator CooldownDisable()
+    {
+        yield return new WaitForSeconds(SetRandomValye());
+        CubeTouched?.Invoke();
     }
 }

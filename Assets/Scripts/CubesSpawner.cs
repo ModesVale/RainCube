@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -27,8 +28,7 @@ public class CubesSpawner : MonoBehaviour
 
     private void ActionOnGet(GameObject instance)
     {
-        Cube cube = instance.GetComponent<Cube>();
-        cube.RegisterReturnAction(() => _pool.Release(instance));
+        instance.GetComponent<Cube>().RegisterReturnAction(() => _pool.Release(instance));
         instance.transform.position = GetRandomSpawnPoint();
         instance.GetComponent<Rigidbody>().velocity = Vector3.zero;
         instance.GetComponent<Cube>().SetDefaultConfig();
@@ -37,19 +37,29 @@ public class CubesSpawner : MonoBehaviour
 
     private void OnRelease(GameObject instance)
     {
-        Cube cube = instance.GetComponent<Cube>();
-        cube.UnregisterReturnAction();
+        instance.GetComponent<Cube>().UnregisterReturnAction();
         instance.SetActive(false);
     }
 
     private void Start()
     {
-        InvokeRepeating(nameof(GetCube), InitialDelay, _repeatRate);
+        StartCoroutine(SpawnLoop());
     }
 
     private void GetCube()
     {
         _pool.Get();
+    }
+
+    private IEnumerator SpawnLoop()
+    {
+        yield return new WaitForSeconds(InitialDelay);
+
+        while (true)
+        {
+            GetCube();
+            yield return new WaitForSeconds(_repeatRate);
+        }
     }
 
     private Vector3 GetRandomSpawnPoint()
@@ -61,5 +71,13 @@ public class CubesSpawner : MonoBehaviour
         float z = Random.Range(-_spawnAreaSize.z * halfDivisior, _spawnAreaSize.z * halfDivisior);
 
         return _spawnCenter.position + new Vector3(x, y, z);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (_spawnCenter == null) return;
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(_spawnCenter.position, _spawnAreaSize);
     }
 }
