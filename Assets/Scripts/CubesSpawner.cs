@@ -4,19 +4,19 @@ using UnityEngine.Pool;
 
 public class CubesSpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject _prefab;
+    [SerializeField] private Cube _prefab;
     [SerializeField] private Vector3 _spawnAreaSize = new Vector3(10f, 2f, 10f);
     [SerializeField] private float _repeatRate = 1f;
     [SerializeField] private int _poolCapacity = 10;
     [SerializeField] private int _poolMaxSize = 10;
     [SerializeField] private Transform _spawnCenter;
 
-    private ObjectPool<GameObject> _pool;
+    private ObjectPool<Cube> _pool;
     private const float InitialDelay = 0f;
 
     private void Awake()
     {
-        _pool = new ObjectPool<GameObject>(
+        _pool = new ObjectPool<Cube>(
             createFunc: () => Instantiate(_prefab),
             actionOnGet: (instance) => ActionOnGet(instance),
             actionOnRelease: OnRelease,
@@ -26,19 +26,19 @@ public class CubesSpawner : MonoBehaviour
             maxSize: _poolMaxSize);
     }
 
-    private void ActionOnGet(GameObject instance)
+    private void ActionOnGet(Cube instance)
     {
-        instance.GetComponent<Cube>().RegisterReturnAction(() => _pool.Release(instance));
+        instance.RegisterReturnAction(() => _pool.Release(instance));
         instance.transform.position = GetRandomSpawnPoint();
         instance.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        instance.GetComponent<Cube>().SetDefaultConfig();
-        instance.SetActive(true);
+        instance.SetDefaultConfig();
+        instance.gameObject.SetActive(true);
     }
 
-    private void OnRelease(GameObject instance)
+    private void OnRelease(Cube instance)
     {
         instance.GetComponent<Cube>().UnregisterReturnAction();
-        instance.SetActive(false);
+        instance.gameObject.SetActive(false);
     }
 
     private void Start()

@@ -213,7 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f218609e24ade043926701faac14398, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 6985903636242495215, guid: 09748e0660108f147ac90e8c99a94071, type: 3}
+  _prefab: {fileID: -5212792052056960297, guid: 09748e0660108f147ac90e8c99a94071, type: 3}
   _spawnAreaSize: {x: 25, y: 1, z: 25}
   _repeatRate: 0.3
   _poolCapacity: 20

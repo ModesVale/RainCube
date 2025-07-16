@@ -9,15 +9,20 @@ public class Cube : MonoBehaviour
     [SerializeField] private float _runTimeMax = 5f;
 
     private float _runTime;
-    private ObjectPool<GameObject> _parentPool;
     private bool _isTouchedPlatform = false;
     private UnityAction _releaseAction;
+    private ColorChanger _colorChanger;
     public event UnityAction CubeTouched;
+
+    private void Awake()
+    {
+        _colorChanger = GetComponent<ColorChanger>();
+    }
 
     public void SetDefaultConfig()
     {
         _isTouchedPlatform = false;
-        GetComponent<ColorChanger>().SetDefaultColor();
+        _colorChanger.SetDefaultColor();
         transform.rotation = Quaternion.identity;
     }
 
@@ -26,7 +31,7 @@ public class Cube : MonoBehaviour
         if (collision.gameObject.TryGetComponent(out Platform _) && _isTouchedPlatform == false)
         {
             _isTouchedPlatform = true;
-            GetComponent<ColorChanger>().SetRandomColor();
+            _colorChanger.SetRandomColor();
             StartCoroutine(CooldownDisable());
         }
     }
@@ -43,7 +48,7 @@ public class Cube : MonoBehaviour
         _releaseAction = null;
     }
 
-    private float SetRandomValye()
+    private float ReturnRandomValye()
     {
         _runTime = Random.Range(_runTimeMin, _runTimeMax);
         return _runTime;
@@ -51,7 +56,7 @@ public class Cube : MonoBehaviour
 
     private IEnumerator CooldownDisable()
     {
-        yield return new WaitForSeconds(SetRandomValye());
+        yield return new WaitForSeconds(ReturnRandomValye());
         CubeTouched?.Invoke();
     }
 }
